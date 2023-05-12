@@ -1,8 +1,10 @@
 //jshint esversion:6
+require("dotenv").config();
 const express = require("express");
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const md5 = require("md5");
 
 const app = express();
 
@@ -22,10 +24,11 @@ mongoose
   .catch((err) => console.log(err));
 
 // User Modal
-const userSchema = {
+const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-};
+});
+const secret = process.env.SECRET_KEY;
 const User = new mongoose.model("User", userSchema);
 
 app.get("/", (req, res) => {
@@ -43,7 +46,7 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
   const newUser = new User({
     email: req.body.username,
-    password: req.body.password,
+    password: md5(req.body.password),
   });
   await newUser.save();
   res.render("secrets");
@@ -51,7 +54,7 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   const username = req.body.username;
-  const password = req.body.password;
+  const password = md5(req.body.password);
 
   const user = await User.findOne({ email: username });
 

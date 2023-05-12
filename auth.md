@@ -31,3 +31,5 @@
 # and decrypted when we call find
 
 ## Level 3 Hashing
+
+## Salting & Hashing (Level 4)
